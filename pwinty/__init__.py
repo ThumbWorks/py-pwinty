@@ -21,24 +21,24 @@ LIVE_API_URL = "https://api.pwinty.com/v2/"
 SANDBOX_API_URL = "https://sandbox.pwinty.com/v2/"
 
 
-# def set_apikey(value):
-#     """
-#     This function can be used to set the API Key.
-#     Alternatively you can do:
-#     >>> import pwinty
-#     >>> pwinty.apikey = "xxxxxxx"
-#     """
-#     apikey = value
-#
-#
-# def set_merchantid(value):
-#     """
-#     This function can be used to set the Merchant ID.
-#     Alternatively you can do:
-#     >>> import pwinty
-#     >>> pwinty.merchantid = "xxxxxxx"
-#     """
-#     merchantid = value
+def set_apikey(value):
+    """
+    This function can be used to set the API Key.
+    Alternatively you can do:
+    >>> import pwinty
+    >>> pwinty.apikey = "xxxxxxx"
+    """
+    apikey = value
+
+
+def set_merchantid(value):
+    """
+    This function can be used to set the Merchant ID.
+    Alternatively you can do:
+    >>> import pwinty
+    >>> pwinty.merchantid = "xxxxxxx"
+    """
+    merchantid = value
 
 
 def underscore_to_camelcase(value):
