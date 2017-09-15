@@ -6,11 +6,9 @@ http://www.github.com/samwillis/py-pwinty
 
 """
 
-import requests  # The onle none standard requirement
+import requests  # The only none standard requirement
 import json
-import pprint
 import hashlib
-
 
 apikey = None       # Set to your Pwinty API Key
 merchantid = None   # Set to your Pwinty API Merchant ID
@@ -23,23 +21,25 @@ LIVE_API_URL = "https://api.pwinty.com/v2/"
 SANDBOX_API_URL = "https://sandbox.pwinty.com/v2/"
 
 
-def set_apikey(value):
-    """
-    This function can be used to set the API Key.
-    Alternatvly you can do:
-    >>> import pwinty
-    >>> pwinty.apikey = "xxxxxxx"
-    """
-    apikey = value
+# def set_apikey(value):
+#     """
+#     This function can be used to set the API Key.
+#     Alternatively you can do:
+#     >>> import pwinty
+#     >>> pwinty.apikey = "xxxxxxx"
+#     """
+#     apikey = value
+#
+#
+# def set_merchantid(value):
+#     """
+#     This function can be used to set the Merchant ID.
+#     Alternatively you can do:
+#     >>> import pwinty
+#     >>> pwinty.merchantid = "xxxxxxx"
+#     """
+#     merchantid = value
 
-def set_merchantid(value):
-    """
-    This function can be used to set the Merchant ID.
-    Alternatvly you can do:
-    >>> import pwinty
-    >>> pwinty.merchantid = "xxxxxxx"
-    """
-    merchantid = value
 
 def underscore_to_camelcase(value):
     """
@@ -61,9 +61,11 @@ def underscore_to_camelcase(value):
     words = value.split('_')
     return '%s%s' % (words[0], ''.join(x if x.isupper() else x.capitalize() for x in words[1:]))
 
+
 def underscore_to_camelcase_dict(d):
-    "Converts a dicts keys to camelcase"
-    return {underscore_to_camelcase(key):value for key, value in d.items()}
+    """Converts a dicts keys to camelcase"""
+    return {underscore_to_camelcase(key): value for key, value in d.items()}
+
 
 def camelcase_to_underscore(value):
     """
@@ -84,12 +86,12 @@ def camelcase_to_underscore(value):
     """
     length = len(value)
     out = ''
-    for i in xrange(length):
+    for i in range(length):
         char = value[i]
-        last_char = value[i-1]
+        last_char = value[i - 1]
         next_char = None
-        if i != length-1:
-            next_char = value[i+1]
+        if i != length - 1:
+            next_char = value[i + 1]
         if i == 0 or char.islower():
             out += char
         elif last_char.islower():
@@ -103,6 +105,7 @@ def camelcase_to_underscore(value):
             else:
                 out += char
     return out
+
 
 def _request(end_point, method, params=None, data=None, files=None):
     headers = {
@@ -124,7 +127,7 @@ def _request(end_point, method, params=None, data=None, files=None):
     if files:
         files = underscore_to_camelcase_dict(files)
 
-    print method, url + end_point
+    print(method, url + end_point)
     r = requests.request(method, url + end_point, headers=headers, params=params, data=data, files=files)
 
     if r.status_code in (200, 201):
@@ -165,7 +168,7 @@ class Resource(object):
 
     def keys(self):
         hide_keys = ('photos',)
-        return [camelcase_to_underscore(key) for key in self._json.keys() if key not in hide_keys] 
+        return [camelcase_to_underscore(key) for key in self._json.keys() if key not in hide_keys]
 
     def get_dict(self):
         return {key: self.__getattr__(key) for key in self.keys()}
@@ -177,7 +180,7 @@ class Resource(object):
         return self.get_dict().items()
 
     def values(self):
-        return seld.get_dict().values()
+        return self.get_dict().values()
 
     def __getattr__(self, name):
         name = underscore_to_camelcase(name)
@@ -186,16 +189,16 @@ class Resource(object):
             if type(value) == dict:
                 value = Resource(value)
             elif type(value) == list:
-                value = [Resource(v) if type(v)==dict else v for v in value]
+                value = [Resource(v) if type(v) == dict else v for v in value]
             return value
         else:
             raise ValueError()
 
     def __setattr__(self, name, value):
-        nameC = underscore_to_camelcase(name)
-        if nameC in self._json:
-            if nameC in self._editable_fields:
-                self._json[nameC] = value
+        name_c = underscore_to_camelcase(name)
+        if name_c in self._json:
+            if name_c in self._editable_fields:
+                self._json[name_c] = value
             else:
                 raise ValueError('Value readonly: %s' % name)
         else:
@@ -260,10 +263,10 @@ class Photo(Resource):
                 file_obj.close()
 
         return cls(res)
-    
+
     @classmethod
-    def get(cls, order_id, id):
-        res = _request('Orders/%s/Photos/%s' % (order_id, id), 'GET')
+    def get(cls, order_id, photo_id):
+        res = _request('Orders/%s/Photos/%s' % (order_id, photo_id), 'GET')
         return cls(res)
 
     def delete(self):
@@ -278,8 +281,8 @@ class OrderPhotos(object):
     def create(self, **kwargs):
         return Photo.create(self._order_id, **kwargs)
 
-    def get(self, id):
-        return Photo.get(self._order_id, id)
+    def get(self, photo_id):
+        return Photo.get(self._order_id, photo_id)
 
     def all(self):
         res = _request('Orders/%s/Photos' % self._order_id, 'GET')
@@ -288,18 +291,19 @@ class OrderPhotos(object):
 
 class Order(Resource):
     _id_field_name = 'id'
-    _editable_fields = ('recipientName', 'address1', 'address2', 'addressTownOrCity', 'stateOrCounty', 'postalOrZipCode')
+    _editable_fields = ('recipientName', 'address1', 'address2', 'addressTownOrCity', 'stateOrCounty',
+                        'postalOrZipCode')
 
     @classmethod
     def create(cls, **kwargs):
         res = _request('Orders', 'POST', data=kwargs)
         return cls(res)
-    
+
     @classmethod
-    def get(cls, id):
-        res = _request('Orders/%s' % id, 'GET')
+    def get(cls, order_id):
+        res = _request('Orders/%s' % order_id, 'GET')
         return cls(res)
-    
+
     @classmethod
     def all(cls):
         res = _request('Orders', 'GET')
@@ -383,5 +387,5 @@ class PwintyServerError(PwintyError):
 
 if __name__ == '__main__':
     import doctest
-    doctest.testmod()
 
+    doctest.testmod()
