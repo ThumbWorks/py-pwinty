@@ -14,11 +14,11 @@ apikey = None       # Set to your Pwinty API Key
 merchantid = None   # Set to your Pwinty API Merchant ID
 sandbox = False     # Sets whether to use the sandbox or live API
 
-VERSION = '0.3'
+VERSION = '0.4'
 
 # The HTTP endpoints for the api
-LIVE_API_URL = "https://api.pwinty.com/v2/"
-SANDBOX_API_URL = "https://sandbox.pwinty.com/v2/"
+LIVE_API_URL = "https://api.pwinty.com/v2.6/"
+SANDBOX_API_URL = "https://sandbox.pwinty.com/v2.6/"
 
 
 def set_apikey(value):
@@ -140,8 +140,10 @@ def _request(end_point, method, params=None, data=None, files=None):
             json_obj = json.loads(r.text)
             if 'errorMessage' in json_obj:
                 message = json_obj['errorMessage']
+            elif: 'message' in  json_obj:
+                message = json_obj['message']
             else:
-                message = json_obj['Message']
+                message = "Unknown error"
             response = r.text
         else:
             message = r.content
