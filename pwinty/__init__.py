@@ -140,7 +140,7 @@ def _request(end_point, method, params=None, data=None, files=None):
             json_obj = json.loads(r.text)
             if 'errorMessage' in json_obj:
                 message = json_obj['errorMessage']
-            elif: 'message' in  json_obj:
+            elif 'message' in  json_obj:
                 message = json_obj['message']
             else:
                 message = "Unknown error"
@@ -275,6 +275,10 @@ class Photo(Resource):
         res = _request('Orders/%s/Photos/%s' % (self.order_id, self.id), 'DELETE')
         return cls(res)
 
+    @classmethod
+    def delete(cls, order_id, photo_id):
+        res = _request('Orders/%s/Photos/%s' % (order_id, photo_id), 'DELETE')
+        return cls(res)
 
 class OrderPhotos(object):
     def __init__(self, order_id):
@@ -340,7 +344,7 @@ class Order(Resource):
         self._json = res  # Update this object with any changes
 
     @property
-    def photos(self):
+    def photos_object(self):
         return OrderPhotos(self.id)
 
 
