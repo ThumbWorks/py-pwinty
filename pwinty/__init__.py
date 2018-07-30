@@ -311,8 +311,11 @@ class Order(Resource):
         return cls(res)
 
     @classmethod
-    def all(cls):
-        res = _request('Orders', 'GET')
+    def all(cls, merchant_order_id=None):
+        params = None
+        if merchant_order_id is not None:
+            params = {'merchandOrderId': merchant_order_id}
+        res = _request('Orders', 'GET', params=params)
         return [cls(o) for o in res]
 
     def save(self):
